@@ -1,0 +1,38 @@
+<resources>
+    
+    <!-- Application theme. -->
+    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <!-- All customizations that are NOT specific to a particular API-level can go here. -->
+        <item name="android:colorPrimary">@color/colorPrimary</item>
+	  	<!--   darker variant for the status bar and contextual app bars -->
+	  	<item name="android:colorPrimaryDark">@color/colorPrimaryDark</item>
+	  	<!--   theme UI controls like checkboxes and text fields -->
+	  	<item name="android:colorAccent">@color/colorAccent</item>
+	  	<item name="android:textColorPrimary">@color/textColorPrimary</item>
+	  	<item name="android:windowBackground">@color/windowBackground</item>
+        <item name="android:navigationBarColor">@color/navigationBarColor</item>
+        
+        <item name="android:windowContentTransitions">true</item>
+        <item name="android:windowAllowEnterTransitionOverlap">true</item>
+        <item name="android:windowAllowReturnTransitionOverlap">true</item>
+        <item name="android:windowSharedElementEnterTransition">@android:transition/move</item>
+        <item name="android:windowSharedElementExitTransition">@android:transition/move</item>
+        <!--<item name="android:datePickerDialogTheme">@style/customDatePickerDialogTheme</item>
+        <item name="android:timePickerDialogTheme">@style/customTimePickerDialogTheme</item>-->
+        
+    </style>
+
+    <style name="customDatePickerDialogTheme" parent="Theme.AppCompat.Light.Dialog">
+        <item name="android:datePickerStyle">@style/customDatePickerStyle</item>
+    </style>
+    <style name="customDatePickerStyle" parent="Theme.AppCompat.Light.Dialog">
+        <item name="android:headerBackground">@color/colorAccent</item>
+    </style>
+    <style name="customTimePickerDialogTheme" parent="Theme.AppCompat.Light.Dialog">
+        <item name="android:datePickerStyle">@style/customTimePickerStyle</item>
+    </style>
+    <style name="customTimePickerStyle" parent="Theme.AppCompat.Light.Dialog">
+        <item name="android:headerBackground">@color/colorAccent</item>
+    </style>
+
+</resources>
