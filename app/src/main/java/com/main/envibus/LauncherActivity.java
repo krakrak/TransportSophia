@@ -4,6 +4,7 @@ package com.main.envibus;
 import android.app.DatePickerDialog.OnDateSetListener;
 import android.app.TimePickerDialog.OnTimeSetListener;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -11,25 +12,32 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.DatePicker;
 import android.widget.TextView;
 import android.widget.TimePicker;
 
+import com.main.envibus.data.StopObject;
 import com.main.envibus.fragment.DatePickerFragment;
 import com.main.envibus.fragment.TimePickerFragment;
 import com.main.envibus.utils.DateTimeManager;
-import com.main.envibus.webservice.WsTask;
+import com.main.envibus.utils.StopDataManager;
+import com.main.envibus.webservice.WsUtils;
 
+import java.io.BufferedInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Objects;
 
 
 public class LauncherActivity extends AppCompatActivity {
 
+    private static final String TAG = LauncherActivity.class.getSimpleName();
     private TextView dateDisplay;
     private TextView timeDisplay;
     private AutoCompleteTextView fromText;
@@ -41,6 +49,7 @@ public class LauncherActivity extends AppCompatActivity {
     private int month;
     private int year;
     private TextView errorView;
+    protected ArrayList<StopObject> stopObjects;
 
     @Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -55,19 +64,6 @@ public class LauncherActivity extends AppCompatActivity {
         fromText = (AutoCompleteTextView) findViewById(R.id.editDepart);
         toText = (AutoCompleteTextView) findViewById(R.id.editArriver);
 
-        String [] stops = getResources().getStringArray(R.array.stops_array);
-
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, stops);
-
-        try {
-            URL busStops = new URL("http://www.ceparou06.fr/WebServices/RestService/api/transport/v1/SearchPointsByCostWithOptions/json?key=TSI006&keywords=Inria&maxItems=3&pointTypes=0&categories=0");
-            new WsTask().execute(busStops);
-        }catch (MalformedURLException mue) {
-            Log.e(LauncherActivity.class.getSimpleName(), "Malformed url ");
-            mue.printStackTrace();
-        }
-        fromText.setAdapter(adapter);
-        toText.setAdapter(adapter);
 	}
 
     public boolean onCreateOptionsMenu (Menu menu) {
@@ -80,7 +76,7 @@ public class LauncherActivity extends AppCompatActivity {
 
         int id = item.getItemId();
 
-        if( id == R.id.action_settings) {
+        if (id == R.id.action_settings) {
             return true;
         }
 
@@ -180,7 +176,7 @@ public class LauncherActivity extends AppCompatActivity {
 
     public void doSearch(View view) {
 
-        Log.v("LAUNCHER", "Search button Clicked !");
+        Log.v(TAG, "Search button Clicked !");
         errorView = (TextView) findViewById(R.id.error);
 
         Intent searchResults = new Intent(this, ResultsActivity.class);
@@ -197,15 +193,75 @@ public class LauncherActivity extends AppCompatActivity {
         String from = fromText.getText().toString();
         String to = toText.getText().toString();
 
+        try {
+
+            URL busStopsTo = new URL("http://www.ceparou06.fr/WebServices/RestService/api/transport/v1/SearchPointsByCostWithOptions/json?key=TSI006&keywords="+from+"&maxItems=3&pointTypes=0&categories=0");
+            URL busStopsFrom = new URL("http://www.ceparou06.fr/WebServices/RestService/api/transport/v1/SearchPointsByCostWithOptions/json?key=TSI006&keywords="+to+"&maxItems=3&pointTypes=0&categories=0");
+            new GetStopsTask().execute(busStopsFrom, busStopsTo);
+        }catch (MalformedURLException mue) {
+            Log.e(TAG, "Malformed url ");
+            mue.printStackTrace();
+        }
+
         if(!Objects.equals(from, "") && !Objects.equals(to, "")) {
             searchResults.putExtra("from", from);
             searchResults.putExtra("destination", to);
 
-            errorView.setText("");
-            startActivity(searchResults);
+            //errorView.setText("");
+            //startActivity(searchResults);
         } else
         {
             errorView.setText("Arrêt de départ ou d'arriver manquant");
+        }
+
+
+    }
+
+    private class GetStopsTask extends AsyncTask<URL, Void, Void>
+    {
+        private ArrayList<String> responses = new ArrayList<>();
+
+        protected String getASCIIContentFromEntity(HttpURLConnection conn) throws IllegalStateException, IOException
+        {
+            InputStream in = new BufferedInputStream(conn.getInputStream());
+
+            return WsUtils.toString(in);
+
+        }
+        @Override
+        protected Void doInBackground(URL... urls) {
+            int count = urls.length;
+            Log.d(TAG, "Number of URLS "+ count);
+            try
+            {
+                for (int i =0; i<2; i++)
+                {
+                    URL url = urls[i];
+                    HttpURLConnection con = (HttpURLConnection) url.openConnection();
+                    String response = getASCIIContentFromEntity(con);
+                    responses.add(response);
+                }
+            } catch (IOException e) {
+                Log.e(TAG, "Decoding error" + e.toString());
+            }
+
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void unused) {
+
+            stopObjects = new ArrayList<>();
+            if(!responses.isEmpty()) {
+
+                for(int i = 0; i< responses.size(); i++)
+                {
+                    stopObjects.add(StopDataManager.toStopObject(i, responses.get(i)));
+                }
+            }
+
+            errorView.append("From : \n" + responses.get(1) + "To \n" + responses.get(0));
+            Log.d(TAG, "onPostExecute : From " + responses.get(1) + "To" + responses.get(0));
         }
     }
 }
