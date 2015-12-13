@@ -50,6 +50,7 @@ public class LauncherActivity extends AppCompatActivity {
     private int year;
     private TextView errorView;
     protected ArrayList<StopObject> stopObjects;
+    protected Intent searchResults;
 
     @Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -179,7 +180,7 @@ public class LauncherActivity extends AppCompatActivity {
         Log.v(TAG, "Search button Clicked !");
         errorView = (TextView) findViewById(R.id.error);
 
-        Intent searchResults = new Intent(this, ResultsActivity.class);
+        searchResults = new Intent(this, ResultsActivity.class);
 
         searchResults.putExtra("year", year);
         searchResults.putExtra("month", month);
@@ -195,8 +196,8 @@ public class LauncherActivity extends AppCompatActivity {
 
         try {
 
-            URL busStopsTo = new URL("http://www.ceparou06.fr/WebServices/RestService/api/transport/v1/SearchPointsByCostWithOptions/json?key=TSI006&keywords="+from+"&maxItems=3&pointTypes=0&categories=0");
-            URL busStopsFrom = new URL("http://www.ceparou06.fr/WebServices/RestService/api/transport/v1/SearchPointsByCostWithOptions/json?key=TSI006&keywords="+to+"&maxItems=3&pointTypes=0&categories=0");
+            URL busStopsTo = new URL("http://www.ceparou06.fr/WebServices/RestService/api/transport/v1/SearchPointsByCostWithOptions/json?key=TSI006&keywords="+from+"&maxItems=10&pointTypes=0&categories=0");
+            URL busStopsFrom = new URL("http://www.ceparou06.fr/WebServices/RestService/api/transport/v1/SearchPointsByCostWithOptions/json?key=TSI006&keywords="+to+"&maxItems=10&pointTypes=0&categories=0");
             new GetStopsTask().execute(busStopsFrom, busStopsTo);
         }catch (MalformedURLException mue) {
             Log.e(TAG, "Malformed url ");
@@ -261,6 +262,11 @@ public class LauncherActivity extends AppCompatActivity {
             }
 
             errorView.append("From : \n" + responses.get(1) + "To \n" + responses.get(0));
+            if (searchResults != null)
+            {
+                searchResults.putParcelableArrayListExtra("stopObjects", stopObjects);
+                startActivity(searchResults);
+            }
             Log.d(TAG, "onPostExecute : From " + responses.get(1) + "To" + responses.get(0));
         }
     }

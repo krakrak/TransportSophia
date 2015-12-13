@@ -1,11 +1,16 @@
 package com.main.envibus.data;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * Created by KraKk on 15/11/2015.
  */
-public class StopObject
+public class StopObject implements Parcelable
 {
     private static final String TAG = StopObject.class.getSimpleName();
 
@@ -14,6 +19,7 @@ public class StopObject
     //Destination = 1;
     private int purpose;
     private ArrayList<Stop> stops;
+    private List<String> stopsString;
 
     public StopObject(ArrayList<Stop> stops, int purpose) {
         this.stops = stops;
@@ -73,4 +79,73 @@ public class StopObject
                 ", purpose=" + purposeString +
                 '}';
     }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+
+        dest.writeInt(purpose);
+        stopsString = new ArrayList<>();
+
+        for (int i = 0; i<stops.size(); i++)
+        {
+            stopsString.add(i, stops.get(i).toJsonString());
+        }
+        dest.writeArray(stopsString.toArray());
+
+    }
+
+    public static final Parcelable.Creator<StopObject> CREATOR = new Parcelable.Creator<StopObject>()
+    {
+        public StopObject createFromParcel(Parcel in)
+        {
+            return new StopObject(in);
+        }
+
+        @Override
+        public StopObject[] newArray(int size) {
+            return new StopObject[size];
+        }
+    };
+
+    public static final Parcelable.ClassLoaderCreator<StopObject> CLASS_LOADER_CREATOR = new Parcelable.ClassLoaderCreator<StopObject>()
+    {
+        @Override
+        public StopObject createFromParcel(Parcel source, ClassLoader loader) {
+            return null;
+        }
+
+        @Override
+        public StopObject createFromParcel(Parcel source) {
+            return new StopObject(source);
+        }
+
+        @Override
+        public StopObject[] newArray(int size) {
+            return new StopObject[size];
+        }
+    };
+
+    private StopObject(Parcel in)
+    {
+        purpose = in.readInt();
+
+        String [] stopsArray = (String []) in.readArray(null);
+
+        stopsString = new ArrayList<>(Arrays.asList(stopsArray));
+
+        for (int i =0; i < stopsString.size(); i++)
+        {
+            Stop stop = new Stop();
+            stop.jsonStringToObject(stopsString.get(i));
+            stops.add(stop);
+        }
+    }
+
+
+
 }

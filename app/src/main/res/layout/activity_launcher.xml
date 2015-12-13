@@ -170,16 +170,23 @@
                 android:layout_alignParentStart="true"
                 android:onClick="doSearch"/>
 
-            <TextView
-                android:id="@+id/error"
-                android:layout_marginStart="5dp"
-                android:textAppearance="@android:style/TextAppearance.Material.Medium"
-                android:textColor="@color/colorPrimaryDark"
-                android:layout_width="wrap_content"
-                android:layout_below="@+id/search"
+            <ScrollView
+                android:id="@+id/SCROLLER_ID"
+                android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="10dp"
-                android:scrollbars="vertical"/>
+                android:scrollbars="vertical"
+                android:fillViewport="true"
+                android:layout_below="@+id/search">
+
+                <TextView
+                    android:id="@+id/error"
+                    android:layout_marginStart="5dp"
+                    android:textAppearance="@android:style/TextAppearance.Material.Medium"
+                    android:textColor="@color/colorPrimaryDark"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="10dp" />
+            </ScrollView>
 
         </RelativeLayout>
 

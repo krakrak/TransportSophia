@@ -1,10 +1,16 @@
 package com.main.envibus.data;
 
+import android.util.Log;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
 /**
  * Created by KraKk on 15/11/2015.
  */
 public class Stop
 {
+    private static final String TAG = Stop.class.getSimpleName();
     private String code;
     private Double id;
     private String name;
@@ -16,6 +22,9 @@ public class Stop
     private String numRoad;
     private Double roadLength;
     private int type;
+
+    public Stop() {
+    }
 
     public Stop(int type, Double roadLength, String numRoad, Double localityId, String localityName, Float longitude, Float latitude, Double category, String name, Double id, String code) {
         this.type = type;
@@ -118,4 +127,57 @@ public class Stop
     public void setType(int type) {
         this.type = type;
     }
+
+    public String toJsonString()
+    {
+        JSONObject jsonObject = new JSONObject();
+
+        try {
+            jsonObject.put("Id", getId());
+            jsonObject.put("Code", getCode());
+            jsonObject.put("Type", getType());
+            jsonObject.put("Name", getName());
+            jsonObject.put("RoadLength", getRoadLength());
+            jsonObject.put("NumRoad", getNumRoad());
+            jsonObject.put("LocalityId", getLocalityId());
+            jsonObject.put("LocalityName", getLocalityName());
+            jsonObject.put("Longitude", getLongitude());
+            jsonObject.put("Latitude", getLatitude());
+            jsonObject.put("Category", getCategory());
+
+            return jsonObject.toString();
+        } catch(JSONException e)
+        {
+            Log.e(TAG, "Error processing object to JSON");
+            e.printStackTrace();
+            return "";
+        }
+    }
+
+    public void jsonStringToObject(String jsonString)
+    {
+        try
+        {
+            JSONObject jsonObject = new JSONObject(jsonString);
+
+            setCategory(jsonObject.getDouble("Category"));
+            setCode(jsonObject.getString("Code"));
+            setId(jsonObject.getDouble("Id"));
+            setLatitude(Float.valueOf(jsonObject.getString("Latitude")));
+            setLocalityId(jsonObject.getDouble("LocalityId"));
+            setLocalityName(jsonObject.getString("LocalityName"));
+            setLongitude(Float.valueOf(jsonObject.getString("Longitude")));
+            setName(jsonObject.getString("Name"));
+            setNumRoad(jsonObject.getString("NumRoad"));
+            setRoadLength(jsonObject.getDouble("RoadLength"));
+            setType(jsonObject.getInt("Type"));
+
+        } catch (JSONException e)
+        {
+            Log.e(TAG, "Error processing JSON to Object");
+            e.printStackTrace();
+        }
+    }
+
+
 }

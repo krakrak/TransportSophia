@@ -10,8 +10,10 @@ import android.view.MenuItem;
 import android.widget.AutoCompleteTextView;
 import android.widget.TextView;
 
+import com.main.envibus.data.StopObject;
 import com.main.envibus.utils.DateTimeManager;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 
 public class ResultsActivity extends AppCompatActivity {
@@ -30,6 +32,8 @@ public class ResultsActivity extends AppCompatActivity {
 
     private String textFrom;
     private String textDestination;
+
+    private ArrayList<StopObject> stopObjects;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,6 +55,7 @@ public class ResultsActivity extends AppCompatActivity {
         year = fromLauncher.getIntExtra("year", c.get(Calendar.YEAR));
         textFrom = fromLauncher.getStringExtra("from");
         textDestination = fromLauncher.getStringExtra("destination");
+        stopObjects =  fromLauncher.getParcelableArrayListExtra("stopObjects");
 
         Log.v("RESULTS", "From "+textFrom+" to "+textDestination);
 
