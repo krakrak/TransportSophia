@@ -4,7 +4,6 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -21,7 +20,11 @@ public class StopObject implements Parcelable
     private ArrayList<Stop> stops;
     private List<String> stopsString;
 
-    public StopObject(ArrayList<Stop> stops, int purpose) {
+	public StopObject ()
+	{
+	}
+
+	public StopObject(ArrayList<Stop> stops, int purpose) {
         this.stops = stops;
         this.purpose = purpose;
     }
@@ -89,13 +92,14 @@ public class StopObject implements Parcelable
     public void writeToParcel(Parcel dest, int flags) {
 
         dest.writeInt(purpose);
-        stopsString = new ArrayList<>();
+
+	    stopsString = new ArrayList<>();
 
         for (int i = 0; i<stops.size(); i++)
         {
             stopsString.add(i, stops.get(i).toJsonString());
         }
-        dest.writeArray(stopsString.toArray());
+        dest.writeStringList(stopsString);
 
     }
 
@@ -112,31 +116,14 @@ public class StopObject implements Parcelable
         }
     };
 
-    public static final Parcelable.ClassLoaderCreator<StopObject> CLASS_LOADER_CREATOR = new Parcelable.ClassLoaderCreator<StopObject>()
-    {
-        @Override
-        public StopObject createFromParcel(Parcel source, ClassLoader loader) {
-            return null;
-        }
-
-        @Override
-        public StopObject createFromParcel(Parcel source) {
-            return new StopObject(source);
-        }
-
-        @Override
-        public StopObject[] newArray(int size) {
-            return new StopObject[size];
-        }
-    };
 
     private StopObject(Parcel in)
     {
         purpose = in.readInt();
 
-        String [] stopsArray = (String []) in.readArray(null);
-
-        stopsString = new ArrayList<>(Arrays.asList(stopsArray));
+	    stopsString = new ArrayList<>();
+	    in.readStringList(stopsString);
+	    stops = new ArrayList<>();
 
         for (int i =0; i < stopsString.size(); i++)
         {

@@ -10,6 +10,7 @@ import android.view.MenuItem;
 import android.widget.AutoCompleteTextView;
 import android.widget.TextView;
 
+import com.main.envibus.data.Stop;
 import com.main.envibus.data.StopObject;
 import com.main.envibus.utils.DateTimeManager;
 
@@ -18,6 +19,7 @@ import java.util.Calendar;
 
 public class ResultsActivity extends AppCompatActivity {
 
+	private static final String TAG = ResultsActivity.class.getSimpleName();
     private Toolbar toolbar;
     private TextView dateDisplay;
     private TextView timeDisplay;
@@ -56,6 +58,16 @@ public class ResultsActivity extends AppCompatActivity {
         textFrom = fromLauncher.getStringExtra("from");
         textDestination = fromLauncher.getStringExtra("destination");
         stopObjects =  fromLauncher.getParcelableArrayListExtra("stopObjects");
+
+	    for (int i=0; i<stopObjects.size(); i++)
+	    {
+			Log.i(TAG, "Purpose : " + stopObjects.get(i).getPurpose() + ", Number of results " + stopObjects.get(i).getStops().size());
+		    for(int j = 0; j<stopObjects.get(i).getStops().size(); j++)
+		    {
+			    Stop stop = stopObjects.get(i).getStops().get(j);
+			    Log.i(TAG, "Name : "+stop.getName() + " Locality: " +stop.getLocalityName());
+		    }
+	    }
 
         Log.v("RESULTS", "From "+textFrom+" to "+textDestination);
 

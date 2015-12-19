@@ -160,17 +160,17 @@ public class Stop
         {
             JSONObject jsonObject = new JSONObject(jsonString);
 
-            setCategory(jsonObject.getDouble("Category"));
-            setCode(jsonObject.getString("Code"));
-            setId(jsonObject.getDouble("Id"));
-            setLatitude(Float.valueOf(jsonObject.getString("Latitude")));
-            setLocalityId(jsonObject.getDouble("LocalityId"));
-            setLocalityName(jsonObject.getString("LocalityName"));
-            setLongitude(Float.valueOf(jsonObject.getString("Longitude")));
-            setName(jsonObject.getString("Name"));
-            setNumRoad(jsonObject.getString("NumRoad"));
-            setRoadLength(jsonObject.getDouble("RoadLength"));
-            setType(jsonObject.getInt("Type"));
+            this.setCategory(jsonObject.getDouble("Category"));
+            this.setCode(jsonObject.getString("Code"));
+            this.setId(jsonObject.getDouble("Id"));
+            this.setLatitude(Float.valueOf(jsonObject.getString("Latitude")));
+            this.setLocalityId(jsonObject.getDouble("LocalityId"));
+            this.setLocalityName(jsonObject.getString("LocalityName"));
+            this.setLongitude(Float.valueOf(jsonObject.getString("Longitude")));
+            this.setName(jsonObject.getString("Name"));
+            this.setNumRoad(jsonObject.getString("NumRoad"));
+            this.setRoadLength(jsonObject.getDouble("RoadLength"));
+            this.setType(jsonObject.getInt("Type"));
 
         } catch (JSONException e)
         {

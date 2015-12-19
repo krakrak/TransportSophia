@@ -27,9 +27,11 @@ import com.main.envibus.webservice.WsUtils;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Objects;
@@ -196,12 +198,19 @@ public class LauncherActivity extends AppCompatActivity {
 
         try {
 
-            URL busStopsTo = new URL("http://www.ceparou06.fr/WebServices/RestService/api/transport/v1/SearchPointsByCostWithOptions/json?key=TSI006&keywords="+from+"&maxItems=10&pointTypes=0&categories=0");
-            URL busStopsFrom = new URL("http://www.ceparou06.fr/WebServices/RestService/api/transport/v1/SearchPointsByCostWithOptions/json?key=TSI006&keywords="+to+"&maxItems=10&pointTypes=0&categories=0");
+            URL busStopsTo = new URL("http://www.ceparou06.fr/WebServices/RestService/api/transport/v1/SearchPointsByCostWithOptions/json?key=TSI006&keywords="+ URLEncoder.encode(from, "utf-8")
+            +"&maxItems=10&pointTypes=0" + "&categories=0");
+            URL busStopsFrom = new URL("http://www.ceparou06.fr/WebServices/RestService/api/transport/v1/SearchPointsByCostWithOptions/json?key=TSI006&keywords="+URLEncoder.encode(to, "utf-8")
+            +"&maxItems=10&pointTypes=0" +
+                                               "&categories=0");
             new GetStopsTask().execute(busStopsFrom, busStopsTo);
         }catch (MalformedURLException mue) {
             Log.e(TAG, "Malformed url ");
             mue.printStackTrace();
+        } catch ( UnsupportedEncodingException uee)
+        {
+	        Log.e(TAG, "Impossible to encode search parameters");
+            uee.printStackTrace();
         }
 
         if(!Objects.equals(from, "") && !Objects.equals(to, "")) {
